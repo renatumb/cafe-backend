@@ -9,6 +9,12 @@ import java.io.Serializable;
 
 @NamedQuery(name = "User.findByEmailId", query = "select rec from User rec where rec.email=:email")
 
+@NamedQuery(name = "User.getAllUsers", query = "select new com.practice.cafesystem.wrapper.UserWrapper(rec.id, rec.name,rec.email, rec.contactNumber, rec.status) from User rec where rec.role='user'")
+
+@NamedQuery(name = "User.getAllAdmin", query = "select email from User rec where rec.role='admin'")
+
+@NamedQuery( name = "User.updateStatus", query = "update User u set u.status=:status where u.id=:id" )
+
 @Data
 @Entity
 @DynamicInsert
