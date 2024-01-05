@@ -1,5 +1,6 @@
 package com.practice.cafesystem.serviceImpl;
 
+import com.google.common.base.Strings;
 import com.practice.cafesystem.constants.CafeConstants;
 import com.practice.cafesystem.dao.UserDAO;
 import com.practice.cafesystem.jwt.CustomerUsersDetailsService;
@@ -155,5 +156,44 @@ public class UserServiceImpl implements UserService {
             text = "USER:\n" + userUpdated + "\napproved by: \n" + to;
         }
         emailUtils.sendSimpleMessage(to, subject, text, allAdmins);
+    }
+
+    @Override
+    public ResponseEntity<String> checkToken() {
+        return CafeUtils.getResponseEntity("true", HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<String> changePassword(Map<String, String> requestMap) {
+        try {
+            String email = jwtMyFilter.getCurrentUser();
+            User user = userDAO.findByEmailId(email);
+            if (!Objects.isNull(user)) {
+                if (user.getPassword().equals(requestMap.get("oldPassword"))) {
+                    user.setPassword(requestMap.get("newPassword"));
+                    userDAO.save(user);
+                    return CafeUtils.getResponseEntity("Password Updated Sucessfully", HttpStatus.OK);
+                }
+                return CafeUtils.getResponseEntity("Incorrect Old Password", HttpStatus.BAD_REQUEST);
+            }
+            return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity("true", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> forgotPassword(Map<String, String> requestMap) {
+        try {
+            User user = userDAO.findByEmailId(requestMap.get("email"));
+            if (!Objects.isNull(user) && !Strings.isNullOrEmpty(user.getEmail())) {
+                emailUtils.forgotMail(user.getEmail(), "Credentials by Cafe Management System", user.getPassword());
+            }
+            return CafeUtils.getResponseEntity("Check your Email For credentials", HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity("true", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

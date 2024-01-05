@@ -24,4 +24,14 @@ public interface UserRest {
 
     @PostMapping(path="/update")
     ResponseEntity<String> updateStatus(@RequestBody(required = true) Map <String, String > requestMap);
+
+    @GetMapping("/checkToken")
+    ResponseEntity<String> checkToken();
+
+    @PostMapping("/changePassword")
+    ResponseEntity<String> changePassword(@RequestBody Map<String,String> requestMap);
+
+    @PostMapping("/forgotPassword")
+    ResponseEntity<String> forgotPassword(@RequestBody Map<String,String> requestMap);
+
 }
