@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseEntity<List<Category>> getAllCategories(String filter) {
         try {
             if (!Strings.isNullOrEmpty(filter) && filter.equalsIgnoreCase("true")) {
-                // Not implemented ??? why  ??
+                return new ResponseEntity<List<Category>>(categoryDAO.findAllforProduct(), HttpStatus.OK);
             }
             return new ResponseEntity<List<Category>>(categoryDAO.findAll(), HttpStatus.OK);
         } catch (Exception e) {

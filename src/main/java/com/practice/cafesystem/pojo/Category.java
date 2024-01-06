@@ -6,6 +6,8 @@ import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+@NamedQuery(name = "Category.findAllforProduct", query = "select rec from Category rec where rec.id in ( select category from Product where status = 'true') " )
+
 @Data
 @Entity
 @DynamicInsert
