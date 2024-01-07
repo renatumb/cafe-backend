@@ -77,6 +77,62 @@ public class ProductServiceImpl implements ProductService {
         return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<String> updateProductStatus(Map<String, String> requestMap) {
+        try {
+            if (jwtMyFilter.isAdmin()) {
+                Optional product = productDAO.findById(Integer.parseInt(requestMap.get("id")));
+                if (!product.isEmpty()) {
+                    productDAO.updateProductStatus(requestMap.get("status"), Integer.parseInt(requestMap.get("id")));
+                    return CafeUtils.getResponseEntity("Prodcut Status UPDATED successfully", HttpStatus.OK);
+                }
+                return CafeUtils.getResponseEntity("Product DOES not Exist", HttpStatus.OK);
+            }
+            return CafeUtils.getResponseEntity(CafeConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> deleteProduct(Integer id) {
+        try {
+            if (jwtMyFilter.isAdmin()) {
+                Optional product = productDAO.findById(id);
+                if (!product.isEmpty()) {
+                    productDAO.deleteById(id);
+                    return CafeUtils.getResponseEntity("Product DELETED successfully", HttpStatus.OK);
+                }
+                return CafeUtils.getResponseEntity("Product DOES not Exist", HttpStatus.OK);
+            }
+            return CafeUtils.getResponseEntity(CafeConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<ProductWrapper>> getProductByCategory(Integer id) {
+        try {
+            return new ResponseEntity<>(productDAO.getProductByCategory(id), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<ProductWrapper> getProductById(Integer id) {
+        try {
+            return new ResponseEntity<ProductWrapper>(productDAO.getProductById(id), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ProductWrapper(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private boolean validateProductMap(Map<String, String> requestMap, boolean validateId) {
 
         if (requestMap.containsKey("name") && requestMap.containsKey("id") && validateId) {

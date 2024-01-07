@@ -8,6 +8,12 @@ import org.hibernate.annotations.DynamicUpdate;
 
 @NamedQuery(name = "Product.getAllProducts", query = "select new com.practice.cafesystem.wrapper.ProductWrapper(prod.id, prod.name, prod.desccription, prod.price,prod.status, prod.category.Id, prod.category.name ) from  Product prod")
 
+@NamedQuery(name = "Product.updateProductStatus", query="update Product p set p.status=:status where p.id=:id")
+
+@NamedQuery(name = "Product.getProductByCategory", query = "select new com.practice.cafesystem.wrapper.ProductWrapper(prod.id, prod.name ) from  Product prod where prod.category.id=:id and prod.status='true'")
+
+@NamedQuery(name = "Product.getProductById", query = "select new com.practice.cafesystem.wrapper.ProductWrapper(prod.id, prod.name, prod.desccription, prod.price,prod.status, prod.category.Id, prod.category.name ) from  Product prod where prod.id=:id" )
+
 @Data
 @Entity
 @DynamicInsert

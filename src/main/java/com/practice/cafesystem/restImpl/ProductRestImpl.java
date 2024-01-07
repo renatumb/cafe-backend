@@ -48,4 +48,46 @@ public class ProductRestImpl implements ProductRest {
         }
         return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> updateProductStatus(Map<String, String> requestMap) {
+        try {
+            return productService.updateProductStatus(requestMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> deleteProduct(Integer id) {
+        try {
+            return productService.deleteProduct(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //
+    @Override
+    public ResponseEntity<ProductWrapper> getProductById(Integer id) {
+        try {
+            return productService.getProductById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ProductWrapper(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //
+    @Override
+    public ResponseEntity<List<ProductWrapper>> getProductByCategory(Integer id) {
+        try {
+            return productService.getProductByCategory(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
