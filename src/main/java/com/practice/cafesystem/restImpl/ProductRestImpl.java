@@ -1,6 +1,7 @@
-package com.practice.cafesystem.rest;
+package com.practice.cafesystem.restImpl;
 
 import com.practice.cafesystem.constants.CafeConstants;
+import com.practice.cafesystem.rest.ProductRest;
 import com.practice.cafesystem.service.ProductService;
 import com.practice.cafesystem.utils.CafeUtils;
 import com.practice.cafesystem.wrapper.ProductWrapper;
