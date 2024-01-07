@@ -1,6 +1,7 @@
-package com.practice.cafesystem.rest;
+package com.practice.cafesystem.restImpl;
 
 import com.practice.cafesystem.constants.CafeConstants;
+import com.practice.cafesystem.rest.ProductRest;
 import com.practice.cafesystem.service.ProductService;
 import com.practice.cafesystem.utils.CafeUtils;
 import com.practice.cafesystem.wrapper.ProductWrapper;
@@ -46,5 +47,47 @@ public class ProductRestImpl implements ProductRest {
             e.printStackTrace();
         }
         return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> updateProductStatus(Map<String, String> requestMap) {
+        try {
+            return productService.updateProductStatus(requestMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> deleteProduct(Integer id) {
+        try {
+            return productService.deleteProduct(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //
+    @Override
+    public ResponseEntity<ProductWrapper> getProductById(Integer id) {
+        try {
+            return productService.getProductById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ProductWrapper(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //
+    @Override
+    public ResponseEntity<List<ProductWrapper>> getProductByCategory(Integer id) {
+        try {
+            return productService.getProductByCategory(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
