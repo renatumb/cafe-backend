@@ -1,16 +1,26 @@
 package com.practice.cafesystem.rest;
 
 
+import com.practice.cafesystem.pojo.Bill;
+import java.util.List;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/bill")
 public interface BillRest {
 
     @PostMapping("/generateReport")
     ResponseEntity<String> generateReport(@RequestBody Map<String, Object> requestMap);
+
+    @GetMapping("/getBills")
+    ResponseEntity<List<Bill>> getBills();
+
+    @PostMapping("/getPdf")
+    ResponseEntity<byte[]> getPdf(@RequestBody Map<String, Object> requestMap);
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<String> deleteBill(@PathVariable Integer id);
+
 
 }

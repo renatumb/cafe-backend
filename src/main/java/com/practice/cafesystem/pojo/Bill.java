@@ -7,6 +7,10 @@ import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+@NamedQuery( name = "Bill.getAllBills", query="select bl from Bill bl order by bl.id desc")
+
+@NamedQuery( name = "Bill.getBillsByUserName", query="select bl from Bill bl where bl.createdBy =:username order by bl.id desc")
+
 @Data
 @Entity
 @DynamicInsert
