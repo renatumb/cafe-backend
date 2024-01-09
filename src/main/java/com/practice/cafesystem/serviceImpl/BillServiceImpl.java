@@ -12,7 +12,10 @@ import com.practice.cafesystem.pojo.Bill;
 import com.practice.cafesystem.service.BillService;
 import com.practice.cafesystem.utils.CafeUtils;
 import java.io.FileOutputStream;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.List;
 import java.util.stream.Stream;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +32,12 @@ public class BillServiceImpl implements BillService {
     @Autowired
     JwtMyFilter jwtMyFilter;
 
-
     @Override
     public ResponseEntity<String> generateReport(Map<String, Object> requestMap) {
         try {
             String fileName;
             if (validateRequestMap(requestMap)) {
-                if (requestMap.containsKey("isGenerate") && !Boolean.parseBoolean(requestMap.get("isGenerate") + "")) {
+                if (requestMap.containsKey("isGenerated") && !Boolean.parseBoolean(requestMap.get("isGenerated") + "")) {
                     fileName = requestMap.get("uuid") + "";
                 } else {
                     fileName = CafeUtils.getUUID();
@@ -43,7 +45,7 @@ public class BillServiceImpl implements BillService {
                     insertBill(requestMap);
                 }
                 Document document = new Document();
-                PdfWriter.getInstance(document, new FileOutputStream(CafeConstants.STORE_LOCATION + "\\" + fileName+ ".pdf"));
+                PdfWriter.getInstance(document, new FileOutputStream(CafeConstants.STORE_LOCATION + "\\" + fileName + ".pdf"));
                 // --- Draw outside border --------------------
                 document.open();
                 setRectangleInPdf(document);
@@ -71,6 +73,8 @@ public class BillServiceImpl implements BillService {
                 // --- Add footer and close PDF --------------------
                 Paragraph footer = new Paragraph("Total:" + requestMap.get("totalAmount") + "\nThank you for visiting. Please visit again !!!  ", getFont("data"));
                 document.add(footer);
+
+                document.add( new Paragraph("Generated at: "+ new Date() ) );
                 document.close();
                 // --------------------------------------------
                 return CafeUtils.getResponseEntity("uuid: " + fileName , HttpStatus.OK);
@@ -78,6 +82,59 @@ public class BillServiceImpl implements BillService {
             return CafeUtils.getResponseEntity("Required Data not found", HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<Bill>> getBills() {
+        try {
+            List<Bill> bills = new ArrayList<>();
+            if (jwtMyFilter.isAdmin()) {
+                bills = billDAO.getAllBills();
+            } else {
+                bills = billDAO.getBillsByUserName(jwtMyFilter.getCurrentUser());
+            }
+            return new ResponseEntity<>(bills, HttpStatus.OK);
+        } catch (Exception exce) {
+            exce.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<byte[]> getPdf(Map<String, Object> requestMap) {
+        try {
+            byte[] bytes;
+
+            if (requestMap.containsKey("uuid") && validateRequestMap(requestMap)) {
+                String filePath = CafeConstants.STORE_LOCATION + "\\" + requestMap.get("uuid") + ".pdf";
+
+                if (!CafeUtils.fileExist(filePath)) {
+                    requestMap.put("isGenerated", false);
+                    generateReport(requestMap);
+                }
+                bytes = Files.readAllBytes(Paths.get(filePath));
+                return new ResponseEntity<>(bytes, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception exce) {
+            exce.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> deleteBill(Integer id) {
+        try {
+            Optional bill = billDAO.findById(id);
+            if (bill.isPresent()) {
+                billDAO.deleteById(id);
+                return CafeUtils.getResponseEntity("Bill REMOVED successfully", HttpStatus.OK);
+            }
+            return CafeUtils.getResponseEntity("Bill DOESNT exist", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception exl) {
+            exl.printStackTrace();
         }
         return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -110,7 +167,7 @@ public class BillServiceImpl implements BillService {
         Font font = new Font();
         switch (type) {
             case "header":
-                font = FontFactory.getFont(FontFactory.COURIER_OBLIQUE, 25,BaseColor.BLACK);
+                font = FontFactory.getFont(FontFactory.COURIER_OBLIQUE, 25, BaseColor.BLACK);
             case "data":
                 font = FontFactory.getFont(FontFactory.TIMES_ROMAN, 14, BaseColor.BLACK);
         }
@@ -137,8 +194,8 @@ public class BillServiceImpl implements BillService {
             bill.setContactNumber((String) requestMap.get("contactNumber"));
             bill.setPaymentMethod((String) requestMap.get("paymentMethod"));
             bill.setTotal((Integer) requestMap.get("totalAmount"));
-            bill.setProductDetail(( String)requestMap.get("productDetails"));
-            bill.setCreatedBy( jwtMyFilter.getCurrentUser() );
+            bill.setProductDetail((String) requestMap.get("productDetails"));
+            bill.setCreatedBy(jwtMyFilter.getCurrentUser());
 
             billDAO.save(bill);
         } catch (Exception ex) {
