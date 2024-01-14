@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
                 var user = customerUsersDetailsService.getUser();
                 if (user != null && Boolean.parseBoolean(user.getStatus())) {
                     String token = jwtUtils.generateToken(user.getEmail(), user.getRole());
-                    return new ResponseEntity<String>("{\"token:\"" + "\"" + token + "\"}", HttpStatus.OK);
+                    return new ResponseEntity<String>("{\"token\":\"" + token + "\"}", HttpStatus.OK);
                 } else {
                     return CafeUtils.getResponseEntity("Wait for Admin Approval", HttpStatus.BAD_REQUEST);
                 }
