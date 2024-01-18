@@ -46,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResponseEntity<List<ProductWrapper>> getAllProducts() {
         try {
-            return new ResponseEntity<List<ProductWrapper>>(productDAO.getAllProducts(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<List<ProductWrapper>>(productDAO.getAllProducts(), HttpStatus.OK);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
