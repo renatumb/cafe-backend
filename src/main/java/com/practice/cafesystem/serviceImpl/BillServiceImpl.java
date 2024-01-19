@@ -77,7 +77,7 @@ public class BillServiceImpl implements BillService {
                 document.add( new Paragraph("Generated at: "+ new Date() ) );
                 document.close();
                 // --------------------------------------------
-                return CafeUtils.getResponseEntity("uuid: " + fileName , HttpStatus.OK);
+                return CafeUtils.getResponseEntity("uuid:" + fileName , HttpStatus.OK);
             }
             return CafeUtils.getResponseEntity("Required Data not found", HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
@@ -107,7 +107,7 @@ public class BillServiceImpl implements BillService {
         try {
             byte[] bytes;
 
-            if (requestMap.containsKey("uuid") && validateRequestMap(requestMap)) {
+            if (requestMap.containsKey("uuid") || validateRequestMap(requestMap)) {
                 String filePath = CafeConstants.STORE_LOCATION + "\\" + requestMap.get("uuid") + ".pdf";
 
                 if (!CafeUtils.fileExist(filePath)) {
@@ -140,11 +140,11 @@ public class BillServiceImpl implements BillService {
     }
 
     private void addRows(PdfPTable pdfPTable, Map<String, Object> mapFromJSON) {
-        pdfPTable.addCell((String) mapFromJSON.get("name"));
-        pdfPTable.addCell((String) mapFromJSON.get("category"));
-        pdfPTable.addCell((String) mapFromJSON.get("quantity"));
-        pdfPTable.addCell((String) mapFromJSON.get("price"));
-        pdfPTable.addCell((String) mapFromJSON.get("total"));
+        pdfPTable.addCell(""+ mapFromJSON.get("name"));
+        pdfPTable.addCell(""+ mapFromJSON.get("category"));
+        pdfPTable.addCell(""+ mapFromJSON.get("quantity"));
+        pdfPTable.addCell(""+ mapFromJSON.get("price"));
+        pdfPTable.addCell(""+ mapFromJSON.get("total"));
     }
 
     private void addTableHeader(PdfPTable pdfPTable) {
@@ -193,8 +193,8 @@ public class BillServiceImpl implements BillService {
             bill.setEmail((String) requestMap.get("email"));
             bill.setContactNumber((String) requestMap.get("contactNumber"));
             bill.setPaymentMethod((String) requestMap.get("paymentMethod"));
-            bill.setTotal((Integer) requestMap.get("totalAmount"));
-            bill.setProductDetail((String) requestMap.get("productDetails"));
+            bill.setTotalAmount((Integer) requestMap.get("totalAmount"));
+            bill.setProductDetails((String) requestMap.get("productDetails"));
             bill.setCreatedBy(jwtMyFilter.getCurrentUser());
 
             billDAO.save(bill);
