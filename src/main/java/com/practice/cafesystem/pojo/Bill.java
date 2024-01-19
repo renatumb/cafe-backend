@@ -34,11 +34,11 @@ public class Bill implements Serializable {
 
     private String paymentMethod;
 
-    private Integer total;
+    private Integer totalAmount;
 
     //@Column(name="product_detail", columnDefinition = "json")
-    @Column(name="product_detail")
-    private String productDetail;
+    @Column(columnDefinition = "text")
+    private String productDetails;
 
     private String createdBy;
 }
