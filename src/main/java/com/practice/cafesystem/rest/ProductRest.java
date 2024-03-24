@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/product")
+@RequestMapping("/api/product")
 public interface ProductRest {
 
     @PostMapping("/add")

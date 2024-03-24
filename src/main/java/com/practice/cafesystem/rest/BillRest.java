@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/bill")
+@RequestMapping("/api/bill")
 public interface BillRest {
 
     @PostMapping("/generateReport")
